@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartBookApp.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,18 +12,19 @@ namespace SmartBookApp.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
-        public string ISBN { get; set; }
         public string Category { get; set; }
+        public string ISBN { get; set; }
         public bool IsLoaned { get; set; }
 
 
-        public Book(string title, string author, string isbn, string category) 
+        public Book(string title, string author, string category, string? isbn = null) 
         {
-            //check if Title, Author, ISBN, Category is not empty or whitespace using ValidateField method
-            Title = ValidateField(title, nameof(Title));
-            Author = ValidateField(author, nameof(Author));
-            ISBN = string.IsNullOrWhiteSpace(isbn) ? GenerateISBN() : ValidateField(isbn, nameof(ISBN));
-            Category = ValidateField(category, nameof(Category));
+            //check if Title, Author, ISBN, Category is not empty or whitespace using ValidateField method from Validation file
+            Title = Validation.ValidateField(title, nameof(Title));
+            Author = Validation.ValidateField(author, nameof(Author));
+            Category = Validation.ValidateField(category, nameof(Category));
+            // Check if the user provided an ISBN. If not, generate a random valid ISBN.
+            ISBN = string.IsNullOrWhiteSpace(isbn) ? GenerateISBN() : Validation.ValidateField(isbn, nameof(ISBN));
 
             //Id = (int)(DateTime.Now.Ticks % int.MaxValue); // Ticks to change Date to number but it returns a long 64 so we use % int.MaxValue to change it to int 32
             Id = GenerateId();
@@ -47,16 +49,6 @@ namespace SmartBookApp.Models
                 isbnBuilder.Append(random.Next(0, 10));
             }
             return isbnBuilder.ToString();  
-        }
-
-        // Private method to validate each field
-        private string ValidateField(string value, string fieldName)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new ArgumentException($"{fieldName} cannot be empty.");
-            }
-            return value;
         }
 
         public override string ToString()
