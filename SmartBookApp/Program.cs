@@ -24,16 +24,28 @@ namespace SmartBookApp
             {
                 Console.WriteLine(b);
             }
+
             Console.WriteLine("----------------------------------------");
             List<Book> searchedBooks = myLibrary.SearchBooks("Sarbast", "author");
+            List<Book> searchedBooks2 = myLibrary.SearchBooks(book_3.ISBN, "isbn");
 
             foreach (Book b in searchedBooks)
             {
                 Console.WriteLine(b);
             }
 
+            if (searchedBooks2.Count > 0)
+            {
+                foreach (Book b in searchedBooks2)
+                {
+                    Console.WriteLine(b);
+                }
+            }
+
+
             Console.WriteLine("----------------------------------------");
-            myLibrary.RemoveBook("Book Four");
+            myLibrary.RemoveBook("Book Four", "title");
+            myLibrary.RemoveBook(book_3.ISBN, "isbn");
             foreach (Book b in allBooks)
             {
                 Console.WriteLine(b);

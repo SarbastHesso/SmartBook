@@ -35,28 +35,34 @@ namespace SmartBookApp.Models
         }
 
         //Remove a book
-        public void RemoveBook(string title)
+        public void RemoveBook(string searchTerm, string searchField)
         {
             //Check if book title we trying to remove is null or empty
-            if (string.IsNullOrWhiteSpace(title))
+            Validation.CheckIfNullOrWhiteSpace(searchTerm, nameof(searchTerm));
+            Validation.CheckIfNullOrWhiteSpace(searchField, nameof(searchField));
+
+            Book bookToRemove = null;
+
+            switch (searchField.ToLower())
             {
-                throw new ArgumentException("Title cannot be empty.", nameof(title));
+                case "title":
+                    //Remove book based on Title
+                    bookToRemove = books.FirstOrDefault(b => b.Title.Equals(searchTerm, StringComparison.OrdinalIgnoreCase)); 
+                    break;
+                case "isbn":
+                    //Remove book based on ISBN
+                    bookToRemove = books.FirstOrDefault(b => b.ISBN.Equals(searchTerm, StringComparison.OrdinalIgnoreCase)); 
+                    break;
+                default:
+                    throw new ArgumentException("Invalid search field. Please use 'title' or 'isbn'.");
+                    break;
             }
-
-            //use SearchBooks to find the book we want to remove
-            List<Book> foundBooks = SearchBooks(title, "title");
-
-            if (foundBooks.Count == 0)
-            {
-                throw new InvalidOperationException("No book with the given title exists in the library.");
-            }
-
-            Book bookToRemove = foundBooks.First();
 
             if (!books.Remove(bookToRemove))
             {
-                throw new InvalidOperationException("Failed to remove the book from the library.");
+                throw new InvalidOperationException("No book found with the provided " + searchField);
             }
+
         }
 
 
@@ -72,10 +78,8 @@ namespace SmartBookApp.Models
         {
 
             // Validate that searchTerm and searchField are not null or whitespace
-            if (string.IsNullOrWhiteSpace(searchTerm))
-                throw new ArgumentException("Search term cannot be empty.", nameof(searchTerm));
-            if (string.IsNullOrWhiteSpace(searchField))
-                throw new ArgumentException("Search field cannot be empty.", nameof(searchField));
+            Validation.CheckIfNullOrWhiteSpace(searchTerm, nameof(searchTerm));
+            Validation.CheckIfNullOrWhiteSpace(searchField, nameof(searchField));
 
             List<Book> searchResult = new List<Book>();
 
@@ -91,7 +95,12 @@ namespace SmartBookApp.Models
                     break;
 
                 case "isbn":
-                    searchResult = books.Where(b => b.ISBN.Contains(searchTerm)).ToList();
+                    //Because the ISBN is always unique, we find the book and added to the list we are returning
+                    Book bookByIsbn = books.FirstOrDefault(b => b.ISBN.Equals(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    if (bookByIsbn != null)
+                    {
+                        searchResult.Add(bookByIsbn);
+                    }
                     break;
 
                 case "category":
