@@ -9,6 +9,7 @@ namespace SmartBookApp.Models
 {
     public class Book
     {
+        // Properties of the book
         public int Id { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
@@ -16,30 +17,32 @@ namespace SmartBookApp.Models
         public string ISBN { get; set; }
         public bool IsLoaned { get; set; }
 
-
-        public Book(string title, string author, string category, string? isbn = null) 
+        public Book(string title, string author, string category, string? isbn = null)
         {
-            //check if Title, Author, ISBN, Category is not empty or whitespace using ValidateField method from Validation file
+            // Validate that Title, Author, and Category are not empty or whitespace
             Title = Validation.ValidateField(title, nameof(Title));
             Author = Validation.ValidateField(author, nameof(Author));
             Category = Validation.ValidateField(category, nameof(Category));
-            // Check if the user provided an ISBN. If not, generate a random valid ISBN.
+
+            // Validate or generate ISBN if not provided
             ISBN = string.IsNullOrWhiteSpace(isbn) ? GenerateISBN() : Validation.ValidateField(isbn, nameof(ISBN));
 
-            //Id = (int)(DateTime.Now.Ticks % int.MaxValue); // Ticks to change Date to number but it returns a long 64 so we use % int.MaxValue to change it to int 32
+            // Generate a unique ID for the book
             Id = GenerateId();
-            IsLoaned = false; // default value, when we add a new book is not loaned
+
+            // By default, a new book is available (not loaned)
+            IsLoaned = false;
         }
 
-        // Method to generate Id, 
-        // Ticks to change Date to number(long 64) and  % int.MaxValue to change long 64 to int 32
+        // Generates a unique ID based on current system time
+        // Uses DateTime.Ticks (long) and converts it to an int
         public static int GenerateId()
         {
             return (int)(DateTime.Now.Ticks % int.MaxValue);
         }
 
-        //Method to generate ISBN
-        // It will generate a random number with 13 digits and always start with 978 and that how a real ISBN looks
+        // Generates a random valid ISBN
+        // ISBN will be 13 digits and start with '978' as real ISBN numbers do
         public static string GenerateISBN()
         {
             Random random = new Random();
@@ -48,13 +51,14 @@ namespace SmartBookApp.Models
             {
                 isbnBuilder.Append(random.Next(0, 10));
             }
-            return isbnBuilder.ToString();  
+            return isbnBuilder.ToString();
         }
 
+        // Overrides ToString to return a readable summary of the book
         public override string ToString()
         {
             return $"{Title} by {Author} | ISBN: {ISBN} | Category: {Category} | {(IsLoaned ? "Loaned out" : "Available")} | ID: {Id}";
         }
-
     }
 }
+

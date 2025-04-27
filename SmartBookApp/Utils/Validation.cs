@@ -8,14 +8,15 @@ namespace SmartBookApp.Utils
 {
     public static class Validation
     {
-        // static method to validate if field is not null or empty and returns a value
+        // Validates that a field is not null, empty, or whitespace and returns its value
         public static string ValidateField(string value, string fieldName)
         {
             CheckIfNullOrWhiteSpace(value, fieldName);
             return value;
         }
 
-        // static method to validate if a string is null or empty 
+        // Checks if a string is null, empty, or consists only of whitespace
+        // Throws an ArgumentException if validation fails
         public static void CheckIfNullOrWhiteSpace(string value, string fieldName)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -23,6 +24,6 @@ namespace SmartBookApp.Utils
                 throw new ArgumentException($"{fieldName} cannot be empty.");
             }
         }
-
     }
 }
+

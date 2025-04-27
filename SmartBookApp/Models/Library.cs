@@ -9,23 +9,23 @@ namespace SmartBookApp.Models
 {
     public class Library
     {
-
         private List<Book> books;
+
         public Library()
         {
             books = new List<Book>();
         }
 
-        //Method to add a new book to the books list
+        // Adds a new book to the library
         public void AddBook(Book book)
         {
-            //Check if the book we want to add is null
+            // Validate that the book is not null
             if (book == null)
             {
                 throw new ArgumentNullException(nameof(book), "The book cannot be null.");
             }
 
-            //Check if a book with the same ISBN already exists
+            // Check if a book with the same ISBN already exists
             if (books.Any(b => b.ISBN == book.ISBN))
             {
                 throw new InvalidOperationException("A book with the same ISBN already exists.");
@@ -34,10 +34,10 @@ namespace SmartBookApp.Models
             books.Add(book);
         }
 
-        //Remove a book
+        // Removes a book based on title or ISBN
         public void RemoveBook(string searchTerm, string searchField)
         {
-            //Check if book title we trying to remove is null or empty
+            // Validate input
             Validation.CheckIfNullOrWhiteSpace(searchTerm, nameof(searchTerm));
             Validation.CheckIfNullOrWhiteSpace(searchField, nameof(searchField));
 
@@ -46,75 +46,84 @@ namespace SmartBookApp.Models
             switch (searchField.ToLower())
             {
                 case "title":
-                    //Remove book based on Title
-                    bookToRemove = books.FirstOrDefault(b => b.Title.Equals(searchTerm, StringComparison.OrdinalIgnoreCase)); 
+                    // Find book by title
+                    bookToRemove = books.FirstOrDefault(b => b.Title.Equals(searchTerm, StringComparison.OrdinalIgnoreCase));
                     break;
                 case "isbn":
-                    //Remove book based on ISBN
-                    bookToRemove = books.FirstOrDefault(b => b.ISBN.Equals(searchTerm, StringComparison.OrdinalIgnoreCase)); 
+                    // Find book by ISBN
+                    bookToRemove = books.FirstOrDefault(b => b.ISBN.Equals(searchTerm, StringComparison.OrdinalIgnoreCase));
                     break;
                 default:
                     throw new ArgumentException("Invalid search field. Please use 'title' or 'isbn'.");
-                    break;
             }
 
+            // If no book found, throw exception
+            if (bookToRemove == null)
+            {
+                throw new InvalidOperationException($"No book found with the provided {searchField}: {searchTerm}");
+            }
+
+            // Try to remove the book
             if (!books.Remove(bookToRemove))
             {
-                throw new InvalidOperationException("No book found with the provided " + searchField);
+                throw new InvalidOperationException("Failed to remove the book from the library.");
             }
-
         }
 
-
-        // Returns a read-only list of books to prevent modifications from outside the class
+        // Returns a read-only list of all books
         public IReadOnlyList<Book> GetBooks()
         {
             return books.AsReadOnly();
         }
 
-
-        // A method to search books by title, author, ISBN, or category
+        // Searches for books by title, author, ISBN, or category
         public List<Book> SearchBooks(string searchTerm, string searchField)
         {
-
-            // Validate that searchTerm and searchField are not null or whitespace
+            // Validate input
             Validation.CheckIfNullOrWhiteSpace(searchTerm, nameof(searchTerm));
             Validation.CheckIfNullOrWhiteSpace(searchField, nameof(searchField));
 
-            List<Book> searchResult = new List<Book>();
+            IEnumerable<Book> filteredBooks;
 
-            // We use where to filte and it will returns IEnumerble list, contain to comprision, StringComparison.OrdinalIgnoreCase to ignore the letters case, ToList to conver the collection to list
+            // Filter books based on search field
             switch (searchField.ToLower())
             {
                 case "title":
-                    searchResult = books.Where(b => b.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    filteredBooks = books.Where(b => b.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
                     break;
-
                 case "author":
-                    searchResult = books.Where(b => b.Author.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    filteredBooks = books.Where(b => b.Author.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
                     break;
-
                 case "isbn":
-                    //Because the ISBN is always unique, we find the book and added to the list we are returning
-                    Book bookByIsbn = books.FirstOrDefault(b => b.ISBN.Equals(searchTerm, StringComparison.OrdinalIgnoreCase));
-                    if (bookByIsbn != null)
-                    {
-                        searchResult.Add(bookByIsbn);
-                    }
+                    filteredBooks = books.Where(b => b.ISBN.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
                     break;
-
                 case "category":
-                    searchResult = books.Where(b => b.Category.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+                    filteredBooks = books.Where(b => b.Category.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
                     break;
-
                 default:
-                    throw new ArgumentException("Invalid search keyword, please use title, author, isbn or category");
-
+                    throw new ArgumentException("Invalid search keyword, please use title, author, isbn or category.");
             }
 
-            return searchResult;
+            return filteredBooks.ToList();
         }
 
+        // Toggles the loan status of a book based on title
+        public void ToggleLoanStatus(string title)
+        {
+            // Validate input
+            Validation.CheckIfNullOrWhiteSpace(title, nameof(title));
 
+            // Find the book by title
+            Book foundBook = books.FirstOrDefault(b => b.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+
+            if (foundBook == null)
+            {
+                throw new InvalidOperationException("No book found with the provided title.");
+            }
+
+            // Toggle the loan status
+            foundBook.IsLoaned = !foundBook.IsLoaned;
+        }
     }
 }
+
