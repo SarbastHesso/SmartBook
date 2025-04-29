@@ -1,4 +1,5 @@
 ﻿using SmartBookApp.Models;
+using SmartBookApp.Utils;
 using System.Text;
 
 namespace SmartBookApp
@@ -13,12 +14,18 @@ namespace SmartBookApp
             Book book_4 = new Book("Book Four", "Roni Hesso", "Fantasy");
             Book book_5 = new Book("Book Five", "Fatima Omar", "Action");
 
-            Library myLibrary = new Library();
+
+            Library myLibrary = LibraryJsonStorage.LoadLibrary();
+
             myLibrary.AddBook(book_1);
             myLibrary.AddBook(book_2);
             myLibrary.AddBook(book_3);
             myLibrary.AddBook(book_4);
             myLibrary.AddBook(book_5);
+
+            LibraryJsonStorage.SaveLibrary(myLibrary);
+            Console.WriteLine("Saved to: " + Path.GetFullPath("library.json"));
+
 
             IReadOnlyList<Book> allBooks = myLibrary.GetBooks();
 
@@ -58,7 +65,8 @@ namespace SmartBookApp
             foreach (Book b in allBooks)
             {
                 Console.WriteLine(b);
-            }           
+            }
+
 
             Console.ReadLine();
         }
