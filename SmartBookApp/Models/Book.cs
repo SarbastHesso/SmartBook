@@ -10,7 +10,6 @@ namespace SmartBookApp.Models
     public class Book
     {
         // Properties of the book
-        public int Id { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
         public string Category { get; set; }
@@ -27,19 +26,10 @@ namespace SmartBookApp.Models
             // Validate or generate ISBN if not provided
             ISBN = string.IsNullOrWhiteSpace(isbn) ? GenerateISBN() : Validation.ValidateField(isbn, nameof(ISBN));
 
-            // Generate a unique ID for the book
-            Id = GenerateId();
-
             // By default, a new book is available (not loaned)
             IsLoaned = false;
         }
 
-        // Generates a unique ID based on current system time
-        // Uses DateTime.Ticks (long) and converts it to an int
-        public static int GenerateId()
-        {
-            return (int)(DateTime.Now.Ticks % int.MaxValue);
-        }
 
         // Generates a random valid ISBN
         // ISBN will be 13 digits and start with '978' as real ISBN numbers do
@@ -57,7 +47,7 @@ namespace SmartBookApp.Models
         // Overrides ToString to return a readable summary of the book
         public override string ToString()
         {
-            return $"{Title} by {Author} | ISBN: {ISBN} | Category: {Category} | {(IsLoaned ? "Loaned out" : "Available")} | ID: {Id}";
+            return $"{Title} by {Author} | ISBN: {ISBN} | Category: {Category} | {(IsLoaned ? "Loaned out" : "Available")}";
         }
     }
 }

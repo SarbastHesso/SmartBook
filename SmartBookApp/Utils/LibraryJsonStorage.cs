@@ -14,18 +14,37 @@ namespace SmartBookApp.Utils
 
         public static void SaveLibrary(Library library)
         {
-            string json = JsonSerializer.Serialize(library);
-            File.WriteAllText(filePath, json);
+            try
+            {
+                string json = JsonSerializer.Serialize(library);
+                File.WriteAllText(filePath, json);
+
+                Console.WriteLine("Library saved successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
         }
 
         public static Library LoadLibrary()
         {
-            if (!File.Exists(filePath))
+            try
             {
-                return new Library();
+                if (!File.Exists(filePath))
+                {
+                    Console.WriteLine("No saved library found.");
+                    return new Library();
+                }
+
+                string json = File.ReadAllText(filePath);
+                return JsonSerializer.Deserialize<Library>(json);
             }
-            string json = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<Library>(json);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading library: {ex.Message}");
+                return new Library(); 
+            }
         }
     }
 }

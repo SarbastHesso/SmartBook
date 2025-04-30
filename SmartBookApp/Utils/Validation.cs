@@ -24,6 +24,7 @@ namespace SmartBookApp.Utils
                 throw new ArgumentException($"{fieldName} cannot be empty.");
             }
         }
+
     }
 }
 
