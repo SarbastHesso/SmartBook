@@ -5,20 +5,24 @@ using System.Linq;
 
 namespace SmartBookApp.Services
 {
+    // This class manages the console interface and interaction with the Library
     public class LibraryApp
     {
         private Library library;
 
+        // Default constructor: creates a new, empty library
         public LibraryApp()
         {
             library = new Library();
         }
 
+        // Constructor that accepts a loaded library (e.g., from file)
         public LibraryApp(Library loadedLibrary)
         {
             library = loadedLibrary ?? new Library();
         }
 
+        // Main loop of the application
         public void RunApp()
         {
             bool isAlive = true;
@@ -32,12 +36,14 @@ namespace SmartBookApp.Services
                     string input = Console.ReadLine();
                     Console.WriteLine();
 
+                    // Validate input
                     if (!int.TryParse(input, out int choice) || choice < 1 || choice > 8)
                     {
                         Console.WriteLine("Invalid input. Please enter a number between 1 and 8.");
                         continue;
                     }
 
+                    // Run selected option
                     switch (choice)
                     {
                         case 1:
@@ -77,6 +83,7 @@ namespace SmartBookApp.Services
             }
         }
 
+        // Displays the main menu
         private void ShowMenu()
         {
             Console.WriteLine("===================== SmartBook Menu =====================");

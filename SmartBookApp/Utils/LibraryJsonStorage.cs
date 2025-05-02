@@ -8,10 +8,13 @@ using System.Threading.Tasks;
 
 namespace SmartBookApp.Utils
 {
+    // Class to andles saving and loading the Library to/from a JSON file.
     public static class LibraryJsonStorage
     {
+        // File path where the library will be saved/loaded
         private static readonly string filePath = "library.json";
 
+        // Saves the given Library object to a JSON file
         public static void SaveLibrary(Library library)
         {
             try
@@ -27,6 +30,7 @@ namespace SmartBookApp.Utils
             }
         }
 
+        // Loads the Library object from the JSON file
         public static Library LoadLibrary()
         {
             try
